@@ -1,14 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const QuizEnd = ({
   quizData,
   totalScore,
+  setTotalScore,
   totalQuestions,
   allAnswers,
   userGivenOptions,
 }) => {
-  console.log(`all Answers: ${allAnswers}`);
+  console.log(`all Answers: ${JSON.stringify(allAnswers)}`);
   console.log(`User given options: ${JSON.stringify(userGivenOptions)}`);
+  const [correctAnswers, setCorrectAnswers] = useState([]);
+  const getCorrectAnswers = (quizData) => {
+    let answers = [];
+    for (let answer of Object.keys(quizData.answers)) {
+      if (quizData.answers[answer] !== null) {
+        answers.push(quizData.correct_answers[`${answer}_correct`]);
+      }
+    }
+    return answers;
+  };
+  useEffect(() => {
+    setCorrectAnswers(getCorrectAnswers(quizData));
+  }, [])
   return (
     <>
       <h2>
@@ -31,7 +45,9 @@ const QuizEnd = ({
                       name={answer}
                       value={answer}
                       defaultChecked={
-                        allAnswers[index][idx] === 'true' ? true : false
+                        allAnswers[individualQuizData.id][idx] === 'true'
+                          ? true
+                          : false
                       }
                       onClick={() => false}
                       onKeyDown={() => false}
@@ -46,8 +62,7 @@ const QuizEnd = ({
           <ul style={{ listStyle: 'none', margin: '1em' }}>
             {Object.keys(individualQuizData.answers).map(
               (answer, idx) =>
-                individualQuizData.answers[answer] !== null 
-                && (
+                individualQuizData.answers[answer] !== null && (
                   <li key={`${index}-${idx}`}>
                     <input
                       type="checkbox"

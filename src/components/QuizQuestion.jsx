@@ -1,60 +1,63 @@
 import React, { useEffect, useState } from 'react';
 import { getAnswerOptionsLength } from '../util';
+import '../css/quiz.css';
 
 const QuizQuestion = ({
   quizData,
   questionNumber,
   totalQuestions,
   setQuestionNumber,
-  totalScore,
-  setTotalScore,
   userGivenOptions,
   setUserGivenOptions
 }) => {
-  console.log(questionNumber, totalQuestions);
+  console.log(questionNumber === 1, totalQuestions);
+  const buttonStyle =
+    questionNumber === 1 ? 'cta-btn-disabled center' : 'cta-btn center';
   const defaultChosenOptions = new Array(
     getAnswerOptionsLength(quizData.answers)
   ).fill(false);
   const [warningMessage, setWarningMessage] = useState('');
   const [selectedAnswers, setSelectedAnswers] = useState(defaultChosenOptions);
-  const [correctAnswers, setCorrectAnswers] = useState([]);
-  const getCorrectAnswers = (quizData) => {
-    let answers = [];
-    for (let answer of Object.keys(quizData.answers)) {
-      if (quizData.answers[answer] !== null) {
-        answers.push(quizData.correct_answers[`${answer}_correct`]);
-      }
-    }
-    return answers;
-  };
-  const checkAnswers = (userGivenOptions, correctOptions) => {
-    for (let i = 0; i < correctOptions.length; i++) {
-      if (`${userGivenOptions[i]}` !== correctOptions[i]) return false;
-    }
-    return true;
-  };
+  
   const handleChange = (position) => {
     const updatedCheckedState = selectedAnswers.map((item, index) =>
       index === position ? !item : item
     );
     setSelectedAnswers(updatedCheckedState);
   };
+  const goToPreviousQuestion = () => {
+    if (selectedAnswers.filter((answer) => answer !== false).length === 0) {
+      setWarningMessage('Please select at least one option');
+      return;
+    }
+    setQuestionNumber(questionNumber - 1);
+    setWarningMessage('');
+    // didn't know this, to compute data.something you have to wrap it in a []
+    setUserGivenOptions({
+      ...userGivenOptions,
+      [quizData.id]: selectedAnswers,
+    });
+  };
   const goToNextQuestion = () => {
     if (selectedAnswers.filter((answer) => answer !== false).length === 0) {
       setWarningMessage('Please select at least one option');
       return;
     }
-    if (checkAnswers(selectedAnswers, correctAnswers)) {
-      setTotalScore(totalScore + 1);
-    }
     setQuestionNumber(questionNumber + 1);
     setWarningMessage('');
     // didn't know this, to compute data.something you have to wrap it in a []
-    setUserGivenOptions({...userGivenOptions, [quizData.id]: selectedAnswers })
+    setUserGivenOptions({
+      ...userGivenOptions,
+      [quizData.id]: selectedAnswers,
+    });
   };
   useEffect(() => {
-    setSelectedAnswers(defaultChosenOptions);
-    setCorrectAnswers(getCorrectAnswers(quizData));
+    if (userGivenOptions[quizData.id] === null || userGivenOptions[quizData.id] === undefined) {
+      setSelectedAnswers(defaultChosenOptions);
+    } else {
+      setSelectedAnswers(userGivenOptions[quizData.id]);
+    }
+    
   }, [quizData, questionNumber]);
   return (
     <div className="quiz-question">
@@ -77,8 +80,17 @@ const QuizQuestion = ({
             )
         )}
       </ul>
-      {warningMessage && <p style={{ color: 'red', margin: '1em' }}>{warningMessage}</p>}
-      <button className="cta-btn center" onClick={goToNextQuestion}>
+      {warningMessage && (
+        <p style={{ color: 'red', margin: '1em' }}>{warningMessage}</p>
+      )}
+      <button
+        className={buttonStyle}
+        onClick={goToPreviousQuestion}
+        disabled={questionNumber === 1}
+      >
+        Previous Question
+      </button>
+      <button className="cta-btn center" style={{ margin: '1em 1.5em' }} onClick={goToNextQuestion}>
         {questionNumber === Number(totalQuestions) ? 'Submit' : 'Next Question'}
       </button>
     </div>

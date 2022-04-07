@@ -40,7 +40,7 @@ const Quiz = ({
       });
   };
   const getAllAnswers = (responseObj) => {
-    const allAnswers = [];
+    const allAnswers = {};
     responseObj.forEach((quizObj) => {
       const individualQuizAnswerObj = [];
       Object.keys(quizObj.answers).forEach((answer) => {
@@ -49,7 +49,7 @@ const Quiz = ({
             quizObj.correct_answers[`${answer}_correct`]
           );
       });
-      allAnswers.push(individualQuizAnswerObj);
+      allAnswers[quizObj.id] = individualQuizAnswerObj;
     });
     return allAnswers;
   };
@@ -66,6 +66,7 @@ const Quiz = ({
         <QuizEnd
           quizData={quizData}
           totalScore={totalScore}
+          setTotalScore={setTotalScore}
           totalQuestions={totalQuestions}
           allAnswers={allAnswers}
           userGivenOptions={userGivenOptions}
@@ -74,16 +75,14 @@ const Quiz = ({
         <>
           <div className="quiz-info">
             <h3>Total Questions: {totalQuestions}</h3>
-            <h3 className="capitial-letter center">Topic: {topic}</h3>
+            <h3 className="capitial-letter center-text">Topic: {topic}</h3>
             <h3 className="capitial-letter">Difficulty: {difficulty}</h3>
           </div>
-          <h3 className="quizQuestion center">Question {questionNumber}</h3>
+          <h3 className="quizQuestion center-text">Question {questionNumber}</h3>
           <QuizQuestion
             quizData={quizData[questionNumber - 1]}
             questionNumber={questionNumber}
             setQuestionNumber={setQuestionNumber}
-            totalScore={totalScore}
-            setTotalScore={setTotalScore}
             totalQuestions={totalQuestions}
             userGivenOptions={userGivenOptions}
             setUserGivenOptions={setUserGivenOptions}

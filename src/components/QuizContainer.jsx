@@ -124,7 +124,7 @@ const QuizContainer = () => {
         ) : (
           ''
         )}
-        <button className="cta-btn" onClick={handleSubmit}>
+        <button className="cta-btn center" onClick={handleSubmit}>
           Start Quiz
         </button>
       </div>
