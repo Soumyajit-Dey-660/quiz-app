@@ -10,7 +10,8 @@ import Quiz from './Quiz';
 const QuizContainer = () => {
   const [toggleQuiz, setToggleQuiz] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
-  const [allAnswers, setAllAnswers] = useState([]);
+  const [allAnswers, setAllAnswers] = useState(null);
+  const [userGivenOptions, setUserGivenOptions] = useState({});
   const [errMessage, setErrMessage] = useState('');
   const [quizFormDetails, setQuizFormDetails] = useState({
     totalQuestions: 10,
@@ -134,6 +135,10 @@ const QuizContainer = () => {
           totalQuestions={totalQuestions}
           topic={topic}
           difficulty={difficulty}
+          allAnswers={allAnswers}
+          setAllAnswers={setAllAnswers}
+          userGivenOptions={userGivenOptions}
+          setUserGivenOptions={setUserGivenOptions}
         />
       )}
     </>

@@ -12,6 +12,10 @@ const Quiz = ({
   totalQuestions,
   topic,
   difficulty,
+  allAnswers,
+  setAllAnswers,
+  userGivenOptions,
+  setUserGivenOptions
 }) => {
   const [quizData, setQuizData] = useState(null);
   const [questionNumber, setQuestionNumber] = useState(1);
@@ -23,8 +27,9 @@ const Quiz = ({
     fetch(quizApiUrl)
       .then((response) => response.json())
       .then((responseData) => {
-        // console.log(responseData);
+        console.log(getAllAnswers(responseData));
         setQuizData(responseData);
+        setAllAnswers(getAllAnswers(responseData));
         setErrMessage('');
         setIsLoading(false);
       })
@@ -33,6 +38,20 @@ const Quiz = ({
         setQuizData([]);
         setIsLoading(false);
       });
+  };
+  const getAllAnswers = (responseObj) => {
+    const allAnswers = [];
+    responseObj.forEach((quizObj) => {
+      const individualQuizAnswerObj = [];
+      Object.keys(quizObj.answers).forEach((answer) => {
+        quizObj.answers[answer] !== null &&
+          individualQuizAnswerObj.push(
+            quizObj.correct_answers[`${answer}_correct`]
+          );
+      });
+      allAnswers.push(individualQuizAnswerObj);
+    });
+    return allAnswers;
   };
 
   useEffect(() => {
@@ -44,7 +63,13 @@ const Quiz = ({
       {isLoading ? <Rings color="#00BFFF" height={80} width={80} /> : ''}
       {errMessage ? <p style={{ color: 'red' }}>Something Went Wrong</p> : ''}
       {questionNumber > totalQuestions ? (
-        <QuizEnd totalScore={totalScore} totalQuestions={totalQuestions} />
+        <QuizEnd
+          quizData={quizData}
+          totalScore={totalScore}
+          totalQuestions={totalQuestions}
+          allAnswers={allAnswers}
+          userGivenOptions={userGivenOptions}
+        />
       ) : quizData !== null ? (
         <>
           <div className="quiz-info">
@@ -60,6 +85,8 @@ const Quiz = ({
             totalScore={totalScore}
             setTotalScore={setTotalScore}
             totalQuestions={totalQuestions}
+            userGivenOptions={userGivenOptions}
+            setUserGivenOptions={setUserGivenOptions}
           />
         </>
       ) : (

@@ -4,11 +4,14 @@ import { getAnswerOptionsLength } from '../util';
 const QuizQuestion = ({
   quizData,
   questionNumber,
+  totalQuestions,
   setQuestionNumber,
   totalScore,
-  setTotalScore
+  setTotalScore,
+  userGivenOptions,
+  setUserGivenOptions
 }) => {
-  // console.log(questionNumber, totalQuestions);
+  console.log(questionNumber, totalQuestions);
   const defaultChosenOptions = new Array(
     getAnswerOptionsLength(quizData.answers)
   ).fill(false);
@@ -34,7 +37,6 @@ const QuizQuestion = ({
     const updatedCheckedState = selectedAnswers.map((item, index) =>
       index === position ? !item : item
     );
-    // console.log(updatedCheckedState);
     setSelectedAnswers(updatedCheckedState);
   };
   const goToNextQuestion = () => {
@@ -42,12 +44,13 @@ const QuizQuestion = ({
       setWarningMessage('Please select at least one option');
       return;
     }
-    // console.log(selectedAnswers, correctAnswers);
     if (checkAnswers(selectedAnswers, correctAnswers)) {
       setTotalScore(totalScore + 1);
     }
     setQuestionNumber(questionNumber + 1);
     setWarningMessage('');
+    // didn't know this, to compute data.something you have to wrap it in a []
+    setUserGivenOptions({...userGivenOptions, [quizData.id]: selectedAnswers })
   };
   useEffect(() => {
     setSelectedAnswers(defaultChosenOptions);
@@ -76,7 +79,7 @@ const QuizQuestion = ({
       </ul>
       {warningMessage && <p style={{ color: 'red', margin: '1em' }}>{warningMessage}</p>}
       <button className="cta-btn center" onClick={goToNextQuestion}>
-        Next Question
+        {questionNumber === Number(totalQuestions) ? 'Submit' : 'Next Question'}
       </button>
     </div>
   );
