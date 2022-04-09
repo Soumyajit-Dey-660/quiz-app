@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import QuizSummary from './UtilComponents/QuizSummary';
 
 const QuizEnd = ({
@@ -9,7 +10,15 @@ const QuizEnd = ({
   allAnswers,
   userGivenOptions,
 }) => {
-  const checkScore = (actualAnswers, userGivenOptions) =>
+  /**
+   * Calculates the accumulative score by checking the original option/options for a question
+   * against the user chosen option/options.
+   *
+   * @param {object} actualAnswers - Actual answers of all the questions.
+   * @param {object} userGivenOptions - User chosen answers of all the questions.
+   * @return {number} Total number of answers user has chosen correctly.
+   */
+  const calculateScore = (actualAnswers, userGivenOptions) =>
     Object.keys(actualAnswers).reduce((acc, questionId) => {
       let isSame = true;
       for (let i = 0; i < actualAnswers[questionId].length; i++) {
@@ -25,7 +34,7 @@ const QuizEnd = ({
       return acc;
     }, 0);
   useEffect(() => {
-    setTotalScore(checkScore(allAnswers, userGivenOptions));
+    setTotalScore(calculateScore(allAnswers, userGivenOptions));
   }, []);
   const listStyle = { listStyle: 'none', margin: '1em' };
   return (
@@ -68,3 +77,12 @@ const QuizEnd = ({
 };
 
 export default QuizEnd;
+
+QuizEnd.propTypes = {
+  quizData: PropTypes.object.isRequired,
+  totalScore: PropTypes.number.isRequired,
+  setTotalScore: PropTypes.func.isRequired,
+  totalQuestions: PropTypes.number.isRequired,
+  allAnswers: PropTypes.object.isRequired,
+  userGivenOptions: PropTypes.object.isRequired
+};

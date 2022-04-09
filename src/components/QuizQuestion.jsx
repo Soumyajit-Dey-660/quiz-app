@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAnswerOptionsLength } from '../util';
+import PropTypes from 'prop-types';
 import '../css/quiz.css';
 
 const QuizQuestion = ({
@@ -8,7 +9,7 @@ const QuizQuestion = ({
   totalQuestions,
   setQuestionNumber,
   userGivenOptions,
-  setUserGivenOptions
+  setUserGivenOptions,
 }) => {
   const buttonStyle =
     questionNumber === 1 ? 'cta-btn-disabled center' : 'cta-btn center';
@@ -17,13 +18,27 @@ const QuizQuestion = ({
   ).fill(false);
   const [warningMessage, setWarningMessage] = useState('');
   const [selectedAnswers, setSelectedAnswers] = useState(defaultChosenOptions);
-  
+  /**
+   * Sets the state variable selectedAnswers with the array which holds the information
+   * of which options has the user selected.
+   *
+   * @param {number} position - Rank of the option in the input based on the array index (starts with 0)
+   * @return {void}
+   */
   const handleChange = (position) => {
     const updatedCheckedState = selectedAnswers.map((item, index) =>
       index === position ? !item : item
     );
     setSelectedAnswers(updatedCheckedState);
   };
+  /**
+   * Checks if the user has selected any answers for the current question or not.
+   * If not then sets an appropriate error message.
+   * Otherwise stores the user chosen option/options for the current question and
+   * then navigates back to the previous question.
+   *
+   * @return {void}
+   */
   const goToPreviousQuestion = () => {
     if (selectedAnswers.filter((answer) => answer !== false).length === 0) {
       setWarningMessage('Please select at least one option');
@@ -31,12 +46,19 @@ const QuizQuestion = ({
     }
     setQuestionNumber(questionNumber - 1);
     setWarningMessage('');
-    // didn't know this, to compute data.something you have to wrap it in a []
     setUserGivenOptions({
       ...userGivenOptions,
       [quizData.id]: selectedAnswers,
     });
   };
+  /**
+   * Checks if the user has selected any answers for the current question or not.
+   * If not then sets an appropriate error message.
+   * Otherwise stores the user chosen option/options for the current question and
+   * then navigates to the next question.
+   *
+   * @return {void}
+   */
   const goToNextQuestion = () => {
     if (selectedAnswers.filter((answer) => answer !== false).length === 0) {
       setWarningMessage('Please select at least one option');
@@ -44,19 +66,20 @@ const QuizQuestion = ({
     }
     setQuestionNumber(questionNumber + 1);
     setWarningMessage('');
-    // didn't know this, to compute data.something you have to wrap it in a []
     setUserGivenOptions({
       ...userGivenOptions,
       [quizData.id]: selectedAnswers,
     });
   };
   useEffect(() => {
-    if (userGivenOptions[quizData.id] === null || userGivenOptions[quizData.id] === undefined) {
+    if (
+      userGivenOptions[quizData.id] === null ||
+      userGivenOptions[quizData.id] === undefined
+    ) {
       setSelectedAnswers(defaultChosenOptions);
     } else {
       setSelectedAnswers(userGivenOptions[quizData.id]);
     }
-    
   }, [quizData, questionNumber]);
   return (
     <div className="quiz-question">
@@ -89,7 +112,11 @@ const QuizQuestion = ({
       >
         Previous Question
       </button>
-      <button className="cta-btn center" style={{ margin: '1em 1.5em' }} onClick={goToNextQuestion}>
+      <button
+        className="cta-btn center"
+        style={{ margin: '1em 1.5em' }}
+        onClick={goToNextQuestion}
+      >
         {questionNumber === Number(totalQuestions) ? 'Submit' : 'Next Question'}
       </button>
     </div>
@@ -97,3 +124,12 @@ const QuizQuestion = ({
 };
 
 export default QuizQuestion;
+
+QuizQuestion.propTypes = {
+  quizData: PropTypes.object.isRequired,
+  questionNumber: PropTypes.number.isRequired,
+  totalQuestions: PropTypes.number.isRequired,
+  setQuestionNumber: PropTypes.func.isRequired,
+  userGivenOptions: PropTypes.object.isRequired,
+  setUserGivenOptions: PropTypes.func.isRequired,
+};

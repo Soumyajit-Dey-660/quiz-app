@@ -19,9 +19,22 @@ const QuizContainer = () => {
     topic: '',
     difficulty: '',
   });
+  /**
+   * Sets the state variables according to the chnages made in the input fields
+   *
+   * @param {object} e - Event reference object
+   * @return {void}
+   */
   const handleChange = (e) => {
     setQuizFormDetails({ ...quizFormDetails, [e.target.name]: e.target.value });
   };
+
+  /**
+   * Checks if all the dropdown values are selected or not. If not then sets an error message accordingly. 
+   * Otherwise lets the user to start the quiz.
+   *
+   * @return {void}
+   */
   const handleSubmit = () => {
     const { totalQuestions, topic, difficulty } = quizFormDetails;
     if (
