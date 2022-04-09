@@ -10,7 +10,6 @@ const QuizQuestion = ({
   userGivenOptions,
   setUserGivenOptions
 }) => {
-  console.log(questionNumber === 1, totalQuestions);
   const buttonStyle =
     questionNumber === 1 ? 'cta-btn-disabled center' : 'cta-btn center';
   const defaultChosenOptions = new Array(

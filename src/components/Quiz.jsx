@@ -27,7 +27,6 @@ const Quiz = ({
     fetch(quizApiUrl)
       .then((response) => response.json())
       .then((responseData) => {
-        console.log(getAllAnswers(responseData));
         setQuizData(responseData);
         setAllAnswers(getAllAnswers(responseData));
         setErrMessage('');

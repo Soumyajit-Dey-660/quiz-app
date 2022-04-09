@@ -6,6 +6,7 @@ import {
 } from '../constants/quizChoices';
 import '../css/quiz.css';
 import Quiz from './Quiz';
+import DropDown from './UtilComponents/DropDown';
 
 const QuizContainer = () => {
   const [toggleQuiz, setToggleQuiz] = useState(false);
@@ -22,8 +23,6 @@ const QuizContainer = () => {
     setQuizFormDetails({ ...quizFormDetails, [e.target.name]: e.target.value });
   };
   const handleSubmit = () => {
-    // TODO: Dropdown values check
-    console.log(quizFormDetails);
     const { totalQuestions, topic, difficulty } = quizFormDetails;
     if (
       totalQuestions === null ||
@@ -58,62 +57,31 @@ const QuizContainer = () => {
           score above 80% on this quiz, you'll be ready for your next job!
         </h3>
         <br />
-        {/* TODO: Make a generic component to reuse as a dropdown */}
         <div className="dropdown-list">
-          <div className="dropdown">
-            Category
-            <select
-              selected={categories[0]}
-              value={quizFormDetails.topic}
-              name="topic"
-              onChange={(e) => handleChange(e)}
-              className="dropdown-menu"
-            >
-              <option value="">Select a category</option>
-              {categories.map((category, idx) => (
-                <option key={idx} value={category} className="sort-otpion">
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="dropdown">
-            Difficulty
-            <select
-              selected={difficulties[0]}
-              value={quizFormDetails.difficulty}
-              name="difficulty"
-              onChange={(e) => handleChange(e)}
-              className="dropdown-menu"
-            >
-              <option value="">Select a difficulty</option>
-              {difficulties.map((difficulty, idx) => (
-                <option key={idx} value={difficulty} className="sort-otpion">
-                  {difficulty}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="dropdown">
-            Number of questions
-            <select
-              selected={noOfQuestions[0]}
-              value={quizFormDetails.totalQuestions}
-              name="totalQuestions"
-              onChange={(e) => handleChange(e)}
-              className="dropdown-menu"
-            >
-              {noOfQuestions.map((numberOfQuestion, idx) => (
-                <option
-                  key={idx}
-                  value={numberOfQuestion}
-                  className="sort-otpion"
-                >
-                  {numberOfQuestion}
-                </option>
-              ))}
-            </select>
-          </div>
+          <DropDown
+            title="Category"
+            valuesArray={categories}
+            formData={quizFormDetails}
+            formName="topic"
+            handleChange={handleChange}
+            defaultOption="Select a difficulty"
+          />
+          <DropDown
+            title="Difficulty"
+            valuesArray={difficulties}
+            formData={quizFormDetails}
+            formName="difficulty"
+            handleChange={handleChange}
+            defaultOption="Select a category"
+          />
+          <DropDown
+            title="Number of questions"
+            valuesArray={noOfQuestions}
+            formData={quizFormDetails}
+            formName="totalQuestions"
+            handleChange={handleChange}
+            defaultOption=""
+          />
         </div>
         {errMessage ? (
           <p

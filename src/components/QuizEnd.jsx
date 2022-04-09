@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import QuizSummary from './UtilComponents/QuizSummary';
 
 const QuizEnd = ({
   quizData,
@@ -8,21 +9,25 @@ const QuizEnd = ({
   allAnswers,
   userGivenOptions,
 }) => {
-  console.log(`all Answers: ${JSON.stringify(allAnswers)}`);
-  console.log(`User given options: ${JSON.stringify(userGivenOptions)}`);
-  const [correctAnswers, setCorrectAnswers] = useState([]);
-  const getCorrectAnswers = (quizData) => {
-    let answers = [];
-    for (let answer of Object.keys(quizData.answers)) {
-      if (quizData.answers[answer] !== null) {
-        answers.push(quizData.correct_answers[`${answer}_correct`]);
+  const checkScore = (actualAnswers, userGivenOptions) =>
+    Object.keys(actualAnswers).reduce((acc, questionId) => {
+      let isSame = true;
+      for (let i = 0; i < actualAnswers[questionId].length; i++) {
+        if (
+          actualAnswers[questionId][i] !==
+          userGivenOptions[questionId][i].toString()
+        ) {
+          isSame = false;
+          break;
+        }
       }
-    }
-    return answers;
-  };
+      isSame && acc++;
+      return acc;
+    }, 0);
   useEffect(() => {
-    setCorrectAnswers(getCorrectAnswers(quizData));
-  }, [])
+    setTotalScore(checkScore(allAnswers, userGivenOptions));
+  }, []);
+  const listStyle = { listStyle: 'none', margin: '1em' };
   return (
     <>
       <h2>
@@ -34,52 +39,28 @@ const QuizEnd = ({
         <div key={index}>
           <h3 className="quizQuestion center">Question {index + 1}</h3>
           <h3 style={{ margin: '1em' }}>{individualQuizData.question}</h3>
-          <h4>Correct Answer:</h4>
-          <ul style={{ listStyle: 'none', margin: '1em' }}>
-            {Object.keys(individualQuizData.answers).map(
-              (answer, idx) =>
-                individualQuizData.answers[answer] !== null && (
-                  <li key={`${index}_${idx}`}>
-                    <input
-                      type="checkbox"
-                      name={answer}
-                      value={answer}
-                      defaultChecked={
-                        allAnswers[individualQuizData.id][idx] === 'true'
-                          ? true
-                          : false
-                      }
-                      onClick={() => false}
-                      onKeyDown={() => false}
-                      className="quiz-answer-options check"
-                    />
-                    {individualQuizData.answers[answer]}
-                  </li>
-                )
-            )}
-          </ul>
-          <h4>Your Answer:</h4>
-          <ul style={{ listStyle: 'none', margin: '1em' }}>
-            {Object.keys(individualQuizData.answers).map(
-              (answer, idx) =>
-                individualQuizData.answers[answer] !== null && (
-                  <li key={`${index}-${idx}`}>
-                    <input
-                      type="checkbox"
-                      name={answer}
-                      value={answer}
-                      defaultChecked={
-                        userGivenOptions[individualQuizData.id][idx]
-                      }
-                      onClick={() => false}
-                      onKeyDown={() => false}
-                      className="quiz-answer-options check"
-                    />
-                    {individualQuizData.answers[answer]}
-                  </li>
-                )
-            )}
-          </ul>
+          <QuizSummary
+            headingText="Correct Answer:"
+            listStyle={listStyle}
+            quizObj={individualQuizData}
+            iteratorIdx={index}
+            chosenOptionsArr={allAnswers}
+          />
+          <QuizSummary
+            headingText="Your Answer:"
+            listStyle={listStyle}
+            quizObj={individualQuizData}
+            iteratorIdx={index}
+            chosenOptionsArr={userGivenOptions}
+          />
+          {individualQuizData.explanation !== null && (
+            <>
+              <p>
+                <strong>Explanation:</strong>
+                {individualQuizData.explanation}
+              </p>
+            </>
+          )}
         </div>
       ))}
     </>

@@ -1,5 +1,4 @@
-## This is a basic Quiz application where you can select the topic, difficulty and the number of questions. 
-## See if you can score more than 80% or not.
+## This is a basic Quiz application where you can select the topic, difficulty and the number of questions. See if you can score more than 80% or not.
 
 ## Steps to start the application: 
 1. Clone the repository using command: git clone <remote repository url>
